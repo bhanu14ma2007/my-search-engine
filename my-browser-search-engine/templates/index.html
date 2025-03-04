@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Search Engine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Search Engine</h1>
+    <input type="text" id="searchQuery" placeholder="Search for something...">
+    <button onclick="search()">Search</button>
+    <div id="results"></div>
+
+    <script>
+        function search() {
+            let query = document.getElementById("searchQuery").value.trim();
+            
+            if (!query) {
+                alert("Please enter a search term!");
+                return;
+            }
+    
+            fetch(`/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    let resultsDiv = document.getElementById("results");
+                    resultsDiv.innerHTML = "";  // Clear previous results
+                    
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = "<p>No results found.</p>";
+                    } else {
+                        data.forEach(item => {
+                            resultsDiv.innerHTML += `<p><a href="${item.url}" target="_blank">${item.title}</a> - ${item.description}</p>`;
+                        });
+                    }
+                })
+                .catch(error => console.error("Search request failed:", error));
+        }
+    </script>
+    
+</body>
+</html>
